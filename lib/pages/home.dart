@@ -32,17 +32,20 @@ class _HomePageState extends State<HomePage> {
               fit: FlexFit.tight,
               child: Container(
                 height: MediaQuery.of(context).size.height,
-                padding: EdgeInsets.all(8),
-                color: Colors.blue,
-                child: TextFormField(
-                  keyboardType: TextInputType.multiline,
-                  maxLines: null,
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: 'Type some text',
+                child: Card(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: TextField(
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Type some text',
+                      ),
+                      focusNode: textFieldFocusNode,
+                      onChanged: onTextFieldChanged,
+                    ),
                   ),
-                  focusNode: textFieldFocusNode,
-                  onChanged: onTextFieldChanged,
                 ),
               ),
             ),
@@ -51,7 +54,6 @@ class _HomePageState extends State<HomePage> {
               fit: FlexFit.tight,
               child: Container(
                 height: MediaQuery.of(context).size.height,
-                color: Colors.pink,
                 child: PaginatedDataTable(
                   header: Text("Words found"),
                   columns: [
