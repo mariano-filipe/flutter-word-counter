@@ -1,16 +1,9 @@
-# word_counter
+# Flutter Word Counter
 
-A new Flutter project.
+A simple word counter designed to be run on the web. It contains a text area and a data table to display the found words and their counts. It was developed using the Flutter framework and built using the [web support](https://flutter.dev/web).
 
-## Getting Started
+Live preview: https://word-counter-flutter.herokuapp.com/
 
-This project is a starting point for a Flutter application.
+Inspired by: https://github.com/florinpop17/app-ideas/blob/master/Projects/1-Beginner/Word-Frequency-App.md
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![the home page of the app](flutter-word-counter.png "App's home page")
