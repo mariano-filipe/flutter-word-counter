@@ -79,12 +79,13 @@ class _HomePageState extends State<HomePage> {
   }
 
   void onTextFieldChanged(String typedText) {
-    RegExp wordRegExp = new RegExp(r"(\w+)");
+    RegExp wordRegExp = new RegExp(r"([^\x00-\x7F]|[a-z|A-Z])+",
+        unicode: true, multiLine: true);
     wordCount = Map();
     setState(() {
       wordRegExp.allMatches(typedText).forEach(
         (RegExpMatch wordMatch) {
-          String word = wordMatch.group(0);
+          String word = wordMatch.group(0).toLowerCase();
           wordCount[word] =
               wordCount.containsKey(word) ? wordCount[word] + 1 : 1;
         },
