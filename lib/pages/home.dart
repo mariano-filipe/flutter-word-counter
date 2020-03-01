@@ -8,6 +8,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   FocusNode textFieldFocusNode;
   Map<String, int> wordCount = {};
+  int sortColumnIndex = 0;
+  bool sortAscending = true;
 
   @override
   void initState() {
@@ -53,10 +55,20 @@ class _HomePageState extends State<HomePage> {
                 child: PaginatedDataTable(
                   header: Text("Words found"),
                   columns: [
-                    DataColumn(label: Text('Word')),
-                    DataColumn(label: Text('Count'))
+                    DataColumn(
+                      label: Text('Word'),
+                      onSort: onTableColumnSort,
+                    ),
+                    DataColumn(
+                      label: Text('Count'),
+                      onSort: onTableColumnSort,
+                      numeric: true,
+                    )
                   ],
-                  source: WordsTableDataSource(this.wordCount),
+                  source: WordsTableDataSource(
+                      wordCount, sortColumnIndex, sortAscending),
+                  sortColumnIndex: sortColumnIndex,
+                  sortAscending: sortAscending,
                 ),
               ),
             ),
@@ -68,15 +80,22 @@ class _HomePageState extends State<HomePage> {
 
   void onTextFieldChanged(String typedText) {
     RegExp wordRegExp = new RegExp(r"(\w+)");
-    this.wordCount = Map();
-    this.setState(() {
+    wordCount = Map();
+    setState(() {
       wordRegExp.allMatches(typedText).forEach(
         (RegExpMatch wordMatch) {
           String word = wordMatch.group(0);
-          this.wordCount[word] =
-              this.wordCount.containsKey(word) ? this.wordCount[word] + 1 : 1;
+          wordCount[word] =
+              wordCount.containsKey(word) ? wordCount[word] + 1 : 1;
         },
       );
+    });
+  }
+
+  void onTableColumnSort(int columnIndex, bool ascending) {
+    setState(() {
+      sortColumnIndex = columnIndex;
+      sortAscending = ascending;
     });
   }
 
@@ -89,8 +108,24 @@ class _HomePageState extends State<HomePage> {
 
 class WordsTableDataSource implements DataTableSource {
   Map<String, int> wordCount;
+  List<String> words = [];
+  List<int> counts = [];
 
-  WordsTableDataSource(this.wordCount);
+  WordsTableDataSource(this.wordCount, int sortColumnIndex, bool ascending) {
+    if (sortColumnIndex == 0) {
+      // Word column
+      this.words = wordCount.keys.toList()
+        ..sort((word, otherWord) =>
+            ascending ? word.compareTo(otherWord) : otherWord.compareTo(word));
+    } else if (sortColumnIndex == 1) {
+      // Count column
+      this.words = wordCount.keys.toList()
+        ..sort((word, otherWord) => ascending
+            ? wordCount[word].compareTo(wordCount[otherWord])
+            : wordCount[otherWord].compareTo(wordCount[word]));
+    }
+    this.counts = this.words.map((word) => wordCount[word]).toList();
+  }
 
   @override
   bool get isRowCountApproximate => false;
@@ -120,8 +155,8 @@ class WordsTableDataSource implements DataTableSource {
   DataRow getRow(int index) {
     return DataRow(
       cells: [
-        DataCell(Text(this.wordCount.keys.elementAt(index))),
-        DataCell(Text(this.wordCount.values.elementAt(index).toString())),
+        DataCell(Text(words[index])),
+        DataCell(Text(counts[index].toString())),
       ],
     );
   }
