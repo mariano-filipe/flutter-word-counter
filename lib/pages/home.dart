@@ -7,7 +7,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   FocusNode textFieldFocusNode;
-  List<String> words = [];
+  Map<String, int> wordCount = {};
 
   @override
   void initState() {
@@ -37,7 +37,7 @@ class _HomePageState extends State<HomePage> {
                   maxLines: null,
                   decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText: 'type some text',
+                    hintText: 'Type some text',
                   ),
                   focusNode: textFieldFocusNode,
                   onChanged: onTextFieldChanged,
@@ -51,9 +51,12 @@ class _HomePageState extends State<HomePage> {
                 height: MediaQuery.of(context).size.height,
                 color: Colors.pink,
                 child: PaginatedDataTable(
-                  header: Text("Found words"),
-                  columns: [DataColumn(label: Text('word'))],
-                  source: WordsTableDataSource(words),
+                  header: Text("Words found"),
+                  columns: [
+                    DataColumn(label: Text('Word')),
+                    DataColumn(label: Text('Count'))
+                  ],
+                  source: WordsTableDataSource(this.wordCount),
                 ),
               ),
             ),
@@ -65,11 +68,15 @@ class _HomePageState extends State<HomePage> {
 
   void onTextFieldChanged(String typedText) {
     RegExp wordRegExp = new RegExp(r"(\w+)");
+    this.wordCount = Map();
     this.setState(() {
-      words = wordRegExp
-          .allMatches(typedText)
-          .map((RegExpMatch wordMatch) => wordMatch.group(0))
-          .toList();
+      wordRegExp.allMatches(typedText).forEach(
+        (RegExpMatch wordMatch) {
+          String word = wordMatch.group(0);
+          this.wordCount[word] =
+              this.wordCount.containsKey(word) ? this.wordCount[word] + 1 : 1;
+        },
+      );
     });
   }
 
@@ -81,15 +88,15 @@ class _HomePageState extends State<HomePage> {
 }
 
 class WordsTableDataSource implements DataTableSource {
-  List<String> words;
+  Map<String, int> wordCount;
 
-  WordsTableDataSource(this.words);
+  WordsTableDataSource(this.wordCount);
 
   @override
   bool get isRowCountApproximate => false;
 
   @override
-  int get rowCount => words.length;
+  int get rowCount => this.wordCount.length;
 
   @override
   int get selectedRowCount => 0;
@@ -113,7 +120,8 @@ class WordsTableDataSource implements DataTableSource {
   DataRow getRow(int index) {
     return DataRow(
       cells: [
-        DataCell(Text(this.words[index])),
+        DataCell(Text(this.wordCount.keys.elementAt(index))),
+        DataCell(Text(this.wordCount.values.elementAt(index).toString())),
       ],
     );
   }
